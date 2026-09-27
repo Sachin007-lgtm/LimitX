@@ -1,0 +1,52 @@
+{
+  "name": "distributed-rate-limiter",
+  "version": "1.0.0",
+  "description": "Distributed rate limiter / API gateway backed by Redis — token bucket, sliding window, atomic Lua scripts",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "lint": "eslint src --ext .ts",
+    "test": "jest --runInBand --forceExit",
+    "test:watch": "jest --runInBand --watch"
+  },
+  "dependencies": {
+    "@fastify/http-proxy": "^9.3.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.26.2",
+    "fastify-plugin": "^4.5.1",
+    "ioredis": "^5.3.2",
+    "pino-pretty": "^11.0.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.12.7",
+    "@typescript-eslint/eslint-plugin": "^7.7.0",
+    "@typescript-eslint/parser": "^7.7.0",
+    "eslint": "^8.57.0",
+    "ioredis-mock": "^8.9.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.5"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.ts"],
+    "moduleNameMapper": {
+      "ioredis": "<rootDir>/node_modules/ioredis-mock"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsconfig": {
+          "strict": true,
+          "esModuleInterop": true
+        }
+      }
+    }
+  }
+}
