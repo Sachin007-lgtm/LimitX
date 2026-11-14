@@ -1,7 +1,10 @@
 import Fastify, { FastifyInstance } from "fastify";
+import path from "path";
+import fastifyStatic from "@fastify/static";
 import { config } from "./config";
 import rateLimitPlugin from "./middleware/rate-limit";
 import healthRoutes from "./routes/health";
+import demoRoutes from "./routes/demo";
 import gatewayRoutes from "./routes/gateway";
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -17,9 +20,15 @@ export async function buildApp(): Promise<FastifyInstance> {
     trustProxy: true,
   });
 
+  // ── Static Frontend UI ────────────────────────────────────────────────────
+  await app.register(fastifyStatic, {
+    root: path.resolve(process.cwd(), "public"),
+    prefix: "/",
+  });
+
   // ── Decorators / plugins ──────────────────────────────────────────────────
 
-  // Rate-limit middleware — runs on every request except /health
+  // Rate-limit middleware — runs on every API request
   await app.register(rateLimitPlugin);
 
   // Proxy forwarding (only when UPSTREAM_URL is set)
@@ -41,6 +50,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   // ── Routes ────────────────────────────────────────────────────────────────
   await app.register(healthRoutes);
+  await app.register(demoRoutes);
 
   if (!config.UPSTREAM_URL) {
     await app.register(gatewayRoutes);

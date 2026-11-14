@@ -60,14 +60,28 @@ declare module "fastify" {
 
 const rateLimitPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.addHook("onRequest", async (req: FastifyRequest, reply: FastifyReply) => {
-    // Skip health check endpoint
-    if (req.url === "/health" || req.url === "/health/") return;
+    const path = req.url.split("?")[0];
+
+    // Skip health checks, demo helper endpoints, and static frontend assets
+    if (
+      path === "/health" ||
+      path === "/health/" ||
+      path === "/health/ready" ||
+      path.startsWith("/api/demo") ||
+      path === "/" ||
+      path === "/index.html" ||
+      path === "/style.css" ||
+      path === "/app.js" ||
+      path === "/favicon.ico" ||
+      path.startsWith("/public/") ||
+      path.startsWith("/assets/")
+    ) {
+      return;
+    }
 
     const clientId = extractClientId(req);
     const tier = extractTier(req);
     const method = req.method;
-    // Normalise path: strip query string
-    const path = req.url.split("?")[0];
 
     const context: RequestContext = { clientId, tier, method, path };
     req.requestContext = context;

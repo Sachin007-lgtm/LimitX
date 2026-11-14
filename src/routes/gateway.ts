@@ -27,8 +27,8 @@ const gatewayRoutes: FastifyPluginAsync = async (fastify) => {
     return;
   }
 
-  // Decision-only mode: echo back the rate-limit result
-  fastify.all("/*", async (req: FastifyRequest, reply: FastifyReply) => {
+  // Decision-only handler: echo back the rate-limit result
+  const handleDecision = async (req: FastifyRequest, reply: FastifyReply) => {
     const result = req.rateLimitResult;
     const context = req.requestContext;
 
@@ -42,12 +42,22 @@ const gatewayRoutes: FastifyPluginAsync = async (fastify) => {
       limit: result?.limit,
       resetAt: result?.resetAt ? new Date(result.resetAt).toISOString() : null,
       degraded: result?.degraded ?? false,
+      instanceId: process.env.INSTANCE_ID ?? "gateway-primary",
       request: {
         method: req.method,
         path: req.url,
       },
     });
-  });
+  };
+
+  // Specific path prefixes to avoid route conflict with static root files
+  fastify.all("/api/*", handleDecision);
+  fastify.all("/auth/*", handleDecision);
+  fastify.all("/webhooks/*", handleDecision);
+  fastify.all("/simulate/*", handleDecision);
+
+  // Catch any other non-static route
+  fastify.setNotFoundHandler(handleDecision);
 };
 
 export default gatewayRoutes;

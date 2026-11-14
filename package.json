@@ -5,14 +5,18 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
+    "build:client": "npm --prefix frontend run build",
+    "build:all": "npm run build && npm --prefix frontend run build",
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev:client": "npm --prefix frontend run dev",
     "lint": "eslint src --ext .ts",
     "test": "jest --runInBand --forceExit",
     "test:watch": "jest --runInBand --watch"
   },
   "dependencies": {
     "@fastify/http-proxy": "^9.3.0",
+    "@fastify/static": "^6.12.0",
     "dotenv": "^16.4.5",
     "fastify": "^4.26.2",
     "fastify-plugin": "^4.5.1",
@@ -36,7 +40,9 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testMatch": ["**/tests/**/*.test.ts"],
+    "testMatch": [
+      "**/tests/**/*.test.ts"
+    ],
     "moduleNameMapper": {
       "ioredis": "<rootDir>/node_modules/ioredis-mock"
     },
