@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: limitx-gateway
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build && npm --prefix frontend install && npm --prefix frontend run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: REDIS_URL
+        sync: false   # Set this manually in Render dashboard → your Upstash/Redis URL
+      - key: REDIS_FAIL_STRATEGY
+        value: open
